@@ -1,0 +1,43 @@
+/* Print optimizations */
+@media print {
+    @page {
+        margin: 0mm; /* Quita los márgenes del navegador para ganar espacio */
+        size: auto;
+    }
+
+    html, body {
+        height: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+        background-image: none !important;
+    }
+
+    .controls-container, h1, .instruction-main, .mini-editor, #crop-modal {
+        display: none !important;
+    }
+
+    .paper-viewport {
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible;
+        display: block !important; /* Reset layout for print */
+    }
+
+    #paper {
+        box-shadow: none !important;
+        width: 100% !important;
+        min-height: 100% !important;
+        transform: none !important;
+        margin: 0 !important;
+        padding: 0 !important; /* El JS aplica padding según el margen configurado, lo respetamos */
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+    }
+
+    .image-wrapper {
+        border: none !important;
+        break-inside: avoid; /* Evita que una imagen se corte entre páginas si es posible */
+    }
+}

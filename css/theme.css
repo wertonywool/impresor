@@ -1,0 +1,207 @@
+/* Base structure and common components */
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Exo+2:wght@400;700&family=Orbitron:wght@400;700&display=swap');
+
+:root {
+    --theme-main: #00b4ff;
+    --theme-dark: #001a33;
+    --theme-accent: #ffffff;
+    --theme-bg: #000810;
+    --theme-gray: #1a3a5a;
+    --theme-danger: #ff3366;
+}
+
+body {
+    background-color: var(--theme-bg);
+    color: var(--theme-accent);
+    font-family: 'Exo 2', sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-image: radial-gradient(circle at 50% 50%, #001a33 0%, #000810 100%);
+    background-attachment: fixed;
+}
+
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--theme-main);
+    font-size: 2.3rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 20px 0;
+    text-shadow: 0 0 10px rgba(0, 180, 255, 0.5), 2px 2px 0px #000;
+    position: relative;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--theme-main);
+}
+
+.controls-container {
+    background: rgba(0, 26, 51, 0.9);
+    backdrop-filter: blur(5px);
+    color: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--theme-main);
+    box-shadow: 0 0 15px rgba(0, 180, 255, 0.2), inset 0 0 10px rgba(0, 180, 255, 0.1);
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    position: sticky;
+    top: 10px;
+    z-index: 100;
+    clip-path: polygon(2% 0%, 100% 0%, 98% 100%, 0% 100%);
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+button, .file-upload-label {
+    background-color: var(--theme-dark);
+    color: var(--theme-main);
+    border: 1px solid var(--theme-main);
+    padding: 8px 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+
+button:hover, .file-upload-label:hover {
+    background-color: var(--theme-main);
+    color: var(--theme-dark);
+    box-shadow: 0 0 10px var(--theme-main);
+    transform: translateY(-2px);
+}
+
+button.active {
+    background-color: var(--theme-main);
+    color: var(--theme-dark);
+    font-weight: bold;
+}
+
+.btn-print {
+    background-color: var(--theme-main);
+    color: var(--theme-dark);
+    font-size: 1.1rem;
+    padding: 10px 30px;
+    box-shadow: 0 0 15px rgba(0, 180, 255, 0.4);
+}
+
+.slider-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(26, 58, 90, 0.5);
+    padding: 8px 15px;
+    border-radius: 2px;
+    border: 1px solid rgba(0, 180, 255, 0.2);
+}
+
+input[type="range"] {
+    flex-grow: 1;
+    accent-color: var(--theme-main);
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.paper-viewport {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+#paper {
+    background: white;
+    padding: 0;
+    box-sizing: border-box;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    position: relative;
+    transform-origin: top center;
+}
+
+.image-wrapper {
+    position: relative;
+    box-sizing: border-box;
+    border: 0.5px solid #eee;
+    overflow: hidden; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+}
+
+.image-wrapper img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.2s;
+    display: block;
+}
+
+.mini-editor {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+    background: rgba(0, 26, 51, 0.85);
+    padding: 5px;
+    z-index: 10;
+    border: 1px solid var(--theme-main);
+}
+
+.image-wrapper:hover .mini-editor {
+    opacity: 1;
+}
+
+.mini-editor button {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+    background: var(--theme-dark);
+    border: 1px solid var(--theme-main);
+    clip-path: none; /* Round for mini editor */
+    border-radius: 2px;
+}
+
+.mini-editor button.btn-danger {
+    color: var(--theme-danger);
+    border-color: var(--theme-danger);
+}
+
+.mini-editor button.btn-danger:hover {
+    background: var(--theme-danger);
+    color: white;
+}
+
+.instruction-main {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--theme-main);
+    font-size: 1.8rem;
+    font-family: 'Orbitron', sans-serif;
+    pointer-events: none;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(0, 180, 255, 0.3);
+    opacity: 0.7;
+}

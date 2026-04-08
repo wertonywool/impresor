@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.E.E.S. IMPRESOR // Persona 3 Edition</title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/print.css">
+</head>
+<body>
+
+    <h1>[ S.E.E.S. PRINTING SYSTEM ]</h1>
+
+    <div class="controls-container">
+        <div class="btn-group">
+            <label class="file-upload-label">
+                <input type="file" id="file-input" multiple accept="image/*">
+                <span>+ Añadir Imágenes</span>
+            </label>
+            <button onclick="clearPaper()"><span>Limpiar</span></button>
+            <button class="btn-print" onclick="window.print()"><span>🖨️ IMPRIMIR</span></button>
+        </div>
+
+        <div class="btn-group">
+            <button id="btn-carta" class="active" onclick="setPaperSize('carta')">Carta</button>
+            <button id="btn-oficio" onclick="setPaperSize('oficio')">Oficio</button>
+        </div>
+
+        <div class="btn-group" style="background: #1a1a1a; padding: 5px; border-radius: 4px;">
+            <div class="slider-group">
+                <label>Columnas:</label>
+                <input type="range" id="grid-slider" min="1" max="6" value="2" oninput="updateLayout()">
+                <span id="grid-value">2</span>
+            </div>
+            <div class="slider-group">
+                <label>Margen (mm):</label>
+                <input type="range" id="gap-slider" min="0" max="20" value="5" oninput="updateLayout()">
+                <span id="gap-value">5mm</span>
+            </div>
+        </div>
+
+        <div style="font-size: 0.85rem; color: #aaa; text-align: center;">
+            <strong style="color:var(--theme-main)">PROTOCOLO ANTI-CORTE ACTIVO:</strong> Las imágenes verticales se preservan íntegras. <br>
+            * Usa <strong>✂️ Ajustar Recorte</strong> para eliminar bordes innecesarios. <br>
+            Pega (CTRL+V) imágenes en cualquier momento.
+        </div>
+    </div>
+
+    <div class="paper-viewport">
+        <div id="paper">
+            <div class="instruction-main" id="instruction-text">SISTEMA EN ESPERA: ARRASTRA O PEGA IMÁGENES</div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de Colores JS
+        const THEME_MAIN = '#00b4ff';
+        // Dimensiones en MM
+        const DIMS = {
+            carta: { w: 215.9, h: 279.4 },
+            oficio: { w: 215.9, h: 355.6 }
+        };
+
+        const paper = document.getElementById('paper');
+        const fileInput = document.getElementById('file-input');
+        const gridSlider = document.getElementById('grid-slider');
+        const gridValue = document.getElementById('grid-value');
+        const gapSlider = document.getElementById('gap-slider');
+        const gapValue = document.getElementById('gap-value');
+        const instructionText = document.getElementById('instruction-text');
+
+        // Estado global
+        let currentPaperSize = 'carta';
+        let imagesData = []; // Guardar info de cada imagen
+
+        // Inicialización
+        document.addEventListener('paste', handlePaste);
+        fileInput.addEventListener('change', handleFileSelect);
+        setPaperSize('carta'); // Establecer por defecto
+
+        // Gestión de Archivos
+        function handlePaste(e) {
+            const items = e.clipboardData.items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    processImage(items[i].getAsFile());
+                }
+            }
+        }
+
+        function handleFileSelect(e) {
+            Array.from(e.target.files).forEach(processImage);
+            fileInput.value = '';
+        }
+
+        // Procesamiento
+        function processImage(blob) {
+            const url = URL.createObjectURL(blob);
+            const imgParams = {
+                id: Date.now() + Math.random(),
+                originalUrl: url,
+                currentUrl: url,
+                rotation: 0,
+            };
+
+            const tempImg = new Image();
+            tempImg.src = url;
+            tempImg.onload = function() {
+                imagesData.push(imgParams);
+                renderImage(imgParams);
+                checkInstructions();
+            };
+        }
+
+        // Renderizado
+        function renderImage(imgData) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'image-wrapper';
+            wrapper.dataset.id = imgData.id;
+            
+            // Mini-editor
+            const miniEditor = document.createElement('div');
+            miniEditor.className = 'mini-editor';
+            miniEditor.innerHTML = `
+                <button onclick="rotateImage('${imgData.id}')">🔄 Rotar</button>
+                <button onclick="startCrop('${imgData.id}')">✂️ Ajustar Recorte</button>
+                <button class="btn-danger" onclick="deleteImage('${imgData.id}')">🗑️</button>
+            `;
+            wrapper.appendChild(miniEditor);
+
+            // Imagen (Anti-Corte)
+            const img = document.createElement('img');
+            img.src = imgData.currentUrl;
+            wrapper.appendChild(img);
+            
+            paper.appendChild(wrapper);
+            
+            applyRotation(wrapper, imgData.rotation);
+            updateLayout();
+        }
+
+        // Maquetación (Grid y Márgenes)
+        function updateLayout() {
+            const cols = gridSlider.value;
+            const gap = gapSlider.value;
+            gridValue.textContent = cols;
+            gapValue.textContent = gap + 'mm';
+
+            paper.style.gap = gap + 'mm';
+            paper.style.padding = gap + 'mm';
+
+            const widthPercent = (100 / cols);
+            const wrappers = paper.querySelectorAll('.image-wrapper');
+            
+            wrappers.forEach(wrapper => {
+                // El ancho es fijo por columna
+                wrapper.style.width = `calc(${widthPercent}% - ${gap}mm)`;
+                
+                // IMPORTANTE: El ALTO del wrapper ahora NO es fijo. 
+                // Se ajusta automáticamente al contenido (la imagen escalada completa).
+                wrapper.style.height = 'auto'; 
+            });
+        }
+
+        function applyRotation(wrapper, deg) {
+            const img = wrapper.querySelector('img');
+            img.style.transform = `rotate(${deg}deg)`;
+            
+            // Si la rotación es vertical, la imagen desbordará. 
+            // Necesitamos reajustar para que se vea completa.
+            if (deg % 180 !== 0) {
+                // Rotación de 90 o 270 grados.
+                // La imagen mantiene su proporción, pero está 'de lado'.
+                // Object-fit contain asegura que se vea completa dentro de su caja de columnas,
+                // pero la 'caja' contenedora necesita un alto para que quepa verticalmente.
+                
+                // Este ajuste es complejo para un layout flexbox de auto-acomodo puro.
+                // La solución más limpia sin recurrir a JS para calcular alturas en px es:
+                // Avisar al usuario que rote la foto primero en su PC si debe imprimirse vertical.
+                
+                // Dejar Object-fit contain funcionando, al menos no se cortará la cara,
+                // aunque desperdiciará espacio de columna arriba/abajo de ella.
+            }
+        }
+
+        // Configuración de Papel
+        function setPaperSize(size) {
+            currentPaperSize = size;
+            document.getElementById('btn-carta').classList.remove('active');
+            document.getElementById('btn-oficio').classList.remove('active');
+            
+            const dims = DIMS[size];
+            paper.style.width = dims.w + 'mm';
+            paper.style.minHeight = dims.h + 'mm';
+            document.getElementById('btn-'+size).classList.add('active');
+            
+            updateLayout();
+        }
+
+        // Acciones Individuales
+        function rotateImage(id) {
+            const index = imagesData.findIndex(img => img.id == id);
+            if (index === -1) return;
+            imagesData[index].rotation = (imagesData[index].rotation + 90) % 360;
+            applyRotation(paper.querySelector(`[data-id="${id}"]`), imagesData[index].rotation);
+            updateLayout(); // Recalcular layout para acomodar los nuevos altos
+        }
+
+        function deleteImage(id) {
+            const index = imagesData.findIndex(img => img.id == id);
+            if (index !== -1) {
+                imagesData.splice(index, 1);
+                paper.querySelector(`[data-id="${id}"]`).remove();
+                checkInstructions();
+                updateLayout();
+            }
+        }
+
+        function clearPaper() {
+            imagesData = [];
+            paper.querySelectorAll('.image-wrapper').forEach(w => w.remove());
+            checkInstructions();
+        }
+
+        function checkInstructions() {
+            instructionText.style.display = imagesData.length > 0 ? 'none' : 'block';
+        }
+
+        // --- Recorte Manual (Avanzado con Cropper.js) ---
+        let currentCropper = null;
+        let croppingId = null;
+
+        function startCrop(id) {
+            const index = imagesData.findIndex(img => img.id == id);
+            if (index === -1) return;
+            croppingId = id;
+
+            // Interfaz de recorte temporal
+            const cropModal = document.createElement('div');
+            cropModal.id = 'crop-modal';
+            cropModal.style = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:2000; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px;';
+
+            const cropHeader = document.createElement('div');
+            cropHeader.style = 'color: white; font-size: 1.1rem; margin-bottom: 10px; text-align: center; font-family: "Orbitron", sans-serif;';
+            cropHeader.innerHTML = `<strong style="color:${THEME_MAIN}">PROTOCOLO DE RECORTE:</strong> Ajusta el área para eliminar bordes.`;
+            cropModal.appendChild(cropHeader);
+
+            const cropImgContainer = document.createElement('div');
+            cropImgContainer.style = 'max-width:90%; max-height:80%; overflow:hidden; background: #eee;';
+            const cropImg = document.createElement('img');
+            
+            // Usar la original siempre para tener máxima calidad al recortar
+            cropImg.src = imagesData[index].originalUrl; 
+            cropImgContainer.appendChild(cropImg);
+            cropModal.appendChild(cropImgContainer);
+
+            cropModal.innerHTML += `
+                <div class="btn-group" style="margin-top:15px;">
+                    <button onclick="cancelCrop()">Cancelar</button>
+                    <button class="btn-print" onclick="confirmCrop()">✅ Confirmar Ajuste</button>
+                </div>
+            `;
+
+            document.body.appendChild(cropModal);
+            
+            // El header se pierde con innerHTML +=, lo reañadimos al contenedor
+            cropModal.prepend(cropHeader);
+            cropModal.insertBefore(cropImgContainer, cropModal.childNodes[1]);
+
+            // Cropper.js config
+            currentCropper = new Cropper(cropImg, {
+                viewMode: 1, 
+                movable: true, zoomable: true, 
+                rotatable: false, scalable: false,
+                autoCropArea: 0.95, // Empezar casi al completo
+                // Proporción libre para que el usuario la ajuste a la foto
+            });
+        }
+
+        function cancelCrop() { destroyCropper(); }
+
+        function confirmCrop() {
+            if (!currentCropper) return;
+            const index = imagesData.findIndex(img => img.id == croppingId);
+            
+            // Obtener canvas recortado
+            const canvas = currentCropper.getCroppedCanvas();
+            const croppedUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+            imagesData[index].currentUrl = croppedUrl;
+
+            // Actualizar DOM
+            const wrapper = paper.querySelector(`[data-id="${croppingId}"]`);
+            wrapper.querySelector('img').src = croppedUrl;
+            
+            destroyCropper();
+            updateLayout(); // Reacomodar con el nuevo alto de la imagen recortada
+        }
+
+        function destroyCropper() {
+            if (currentCropper) currentCropper.destroy();
+            const modal = document.getElementById('crop-modal');
+            if (modal) modal.remove();
+            croppingId = null;
+        }
+
+    </script>
+</body>
+</html>
