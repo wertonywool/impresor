@@ -1,0 +1,148 @@
+/* Persona 3 Reload UI - Moonlight & Aigis Edition */
+
+body {
+    background-color: var(--p3r-bg);
+    color: var(--p3r-text);
+    font-family: var(--font-main);
+    background-image: 
+        radial-gradient(circle at 80% 20%, var(--p3r-yellow-glow) 0%, transparent 40%),
+        linear-gradient(135deg, rgba(0, 180, 255, 0.05) 0%, transparent 100%);
+    background-attachment: fixed;
+}
+
+h1 {
+    font-family: var(--font-accent);
+    font-size: 3.2rem;
+    text-transform: uppercase;
+    color: #fff;
+    margin: 30px 0;
+    transform: rotate(-2deg);
+    text-shadow: 
+        4px 4px 0px var(--p3r-blue-dark),
+        0 0 20px var(--p3r-blue);
+    letter-spacing: -1px;
+    border-bottom: 5px solid var(--p3r-yellow);
+    display: inline-block;
+    padding: 0 20px;
+}
+
+.controls-container {
+    background: rgba(0, 15, 30, 0.95);
+    border: 1px solid var(--p3r-blue);
+    padding: 25px;
+    width: 95%;
+    max-width: 1100px;
+    position: relative;
+    clip-path: polygon(0% 0%, 100% 0%, 98% 100%, 2% 100%);
+    box-shadow: 0 0 30px rgba(0, 180, 255, 0.15);
+}
+
+.controls-container::before {
+    content: "S.E.E.S. MISSION CONTROL";
+    position: absolute;
+    top: 5px; left: 15px;
+    font-family: var(--font-heading);
+    font-size: 0.65rem;
+    color: var(--p3r-yellow);
+    letter-spacing: 2px;
+}
+
+.btn-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+/* Botón de Carga Estilo Aigis */
+.file-upload-label {
+    background: var(--p3r-yellow);
+    color: #000;
+    border: none;
+    font-family: var(--font-accent);
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    position: relative;
+    transform: skewX(-20deg);
+    box-shadow: 5px 5px 0px #000;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.file-upload-label span {
+    transform: skewX(20deg);
+}
+
+.file-upload-label:hover {
+    background: #fff;
+    transform: skewX(-20deg) scale(1.05);
+    box-shadow: 10px 10px 0px var(--p3r-blue);
+}
+
+button {
+    background: transparent;
+    color: var(--p3r-blue);
+    border: 2px solid var(--p3r-blue);
+    font-family: var(--font-heading);
+    padding: 10px 25px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    transform: skewX(-15deg);
+}
+
+button span {
+    display: block;
+    transform: skewX(15deg);
+}
+
+button:hover {
+    background: var(--p3r-blue);
+    color: #000;
+}
+
+button.active {
+    background: var(--p3r-cyan);
+    color: #000;
+    border-color: var(--p3r-cyan);
+    box-shadow: 0 0 15px var(--p3r-cyan);
+}
+
+.btn-print {
+    background: #fff;
+    color: #000;
+    font-family: var(--font-accent);
+    font-size: 1.4rem;
+    padding: 15px 60px;
+    border: none;
+    box-shadow: 6px 6px 0px var(--p3r-blue);
+}
+
+.btn-print:hover {
+    background: var(--p3r-yellow);
+    transform: skewX(-15deg) scale(1.1);
+}
+
+.slider-group {
+    background: rgba(0, 180, 255, 0.1);
+    padding: 8px 15px;
+    border-left: 4px solid var(--p3r-yellow);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.status-box {
+    margin-top: 15px;
+    background: rgba(255, 235, 59, 0.1);
+    padding: 10px;
+    border: 1px dashed var(--p3r-yellow);
+    font-family: var(--font-main);
+    font-size: 0.85rem;
+    text-align: center;
+}

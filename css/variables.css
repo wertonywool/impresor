@@ -1,0 +1,17 @@
+:root {
+    --p3r-blue-bright: #00b4ff;
+    --p3r-blue-deep: #002233;
+    --p3r-blue-night: #000a14;
+    --p3r-yellow: #fff300;
+    --p3r-cyan: #00ffff;
+    --p3r-white: #ffffff;
+    --p3r-gray: #1a1a1a;
+    
+    --font-main: 'Exo 2', sans-serif;
+    --font-heading: 'Orbitron', sans-serif;
+    --font-accent: 'Anton', sans-serif;
+
+    --skew-deg: -15deg;
+    --p3r-shadow: 6px 6px 0px rgba(0,0,0,0.8);
+}
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Exo+2:wght@400;700&family=Orbitron:wght@400;700&display=swap');

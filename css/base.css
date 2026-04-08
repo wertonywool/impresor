@@ -1,0 +1,26 @@
+body {
+    margin: 0; padding: 0;
+    background: var(--p3r-blue-night);
+    color: var(--p3r-white);
+    font-family: var(--font-main);
+    overflow-x: hidden;
+    min-height: 100vh;
+    background-image: 
+        radial-gradient(circle at top right, var(--p3r-blue-deep) 0%, transparent 70%),
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 2px);
+    background-attachment: fixed;
+}
+
+h1 {
+    font-family: var(--font-accent);
+    font-size: 3.5rem;
+    margin: 40px;
+    text-transform: uppercase;
+    transform: rotate(-3deg) skewX(var(--skew-deg));
+    background: var(--p3r-white);
+    color: var(--p3r-blue-night);
+    display: inline-block;
+    padding: 10px 60px;
+    box-shadow: 12px 12px 0px var(--p3r-blue-bright);
+    letter-spacing: -2px;
+}

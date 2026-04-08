@@ -1,0 +1,39 @@
+.mini-editor {
+    position: absolute;
+    top: 5px; right: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: var(--p3r-blue-night);
+    padding: 8px;
+    border: 2px solid var(--p3r-blue-bright);
+    opacity: 0;
+    transition: all 0.2s;
+    z-index: 50;
+    box-shadow: 4px 4px 0px var(--p3r-yellow);
+}
+
+.image-cell:hover .mini-editor {
+    opacity: 1;
+}
+
+.mini-editor button {
+    background: transparent;
+    color: var(--p3r-white);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 5px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-family: var(--font-heading);
+}
+
+.mini-editor button:hover {
+    background: var(--p3r-blue-bright);
+    color: var(--p3r-blue-night);
+    border-color: var(--p3r-yellow);
+}
+
+.mini-editor .btn-danger:hover {
+    background: #ff3366;
+    color: white;
+}
